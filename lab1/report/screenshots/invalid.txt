@@ -1,0 +1,22 @@
+Laboratory 1 — Romanian Caesar cipher
+Cipher (1 = standard, 2 = keyword, 0 = exit): 2
+Operation (1 = encrypt, 2 = decrypt): 1
+Numeric key (1–30): 0
+Invalid input: Key must be an integer from 1 to 30 inclusive.
+Numeric key (1–30): 31
+Invalid input: Key must be an integer from 1 to 30 inclusive.
+Numeric key (1–30): abc
+Invalid input: Key must be an integer from 1 to 30 inclusive.
+Numeric key (1–30): 3
+Keyword (at least 7 Romanian letters, no spaces): secret
+Invalid input: Keyword must contain at least 7 Romanian letters; spaces are not allowed.
+Keyword (at least 7 Romanian letters, no spaces): abc defg
+Invalid input: Rejected character ' ' (U+0020). Allowed letters: AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ (upper/lowercase, cedilla variants accepted); no spaces in the keyword.
+Keyword (at least 7 Romanian letters, no spaces): cryptography
+Permuted alphabet: CRYPTOGAHĂÂBDEFIÎJKLMNQSȘȚUVWXZ
+Text: Salut!
+Invalid input: Rejected character '!' (U+0021). Allowed letters: AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ (upper/lowercase, cedilla variants accepted); spaces are removed.
+Text: salut
+Ciphertext: UÂQXA
+
+Cipher (1 = standard, 2 = keyword, 0 = exit): 0

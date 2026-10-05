@@ -1,0 +1,14 @@
+Laboratory 1 — Romanian Caesar cipher
+Cipher (1 = standard, 2 = keyword, 0 = exit): 1
+Operation (1 = encrypt, 2 = decrypt): 1
+Numeric key (1–30): 3
+Text: cifrul cezar
+Ciphertext: FKITXOFHÂBT
+
+Cipher (1 = standard, 2 = keyword, 0 = exit): 1
+Operation (1 = encrypt, 2 = decrypt): 2
+Numeric key (1–30): 3
+Text: FKITXOFHÂBT
+Plaintext: CIFRULCEZAR
+
+Cipher (1 = standard, 2 = keyword, 0 = exit): 0
