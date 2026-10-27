@@ -10,7 +10,7 @@ mkdir -p "$ROOT/reports"
 
 # Compile from each lab so screenshots and shared inputs resolve consistently.
 # Extra arguments are forwarded to Tectonic (for example, --only-cached).
-for source in lab1/lab1.tex lab2/lab2.tex; do
+for source in lab1/lab1.tex lab2/lab2.tex lab3/lab3.tex; do
   echo "Building $source"
   (
     cd -- "$ROOT/$(dirname -- "$source")"
