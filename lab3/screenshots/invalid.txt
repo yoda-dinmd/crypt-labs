@@ -1,0 +1,17 @@
+Laboratory 3 — Romanian Vigenere cipher (task 3.2, student 12)
+Operation (1 = encrypt, 2 = decrypt, 0 = exit): 3
+Invalid input: Choose an integer from 0 to 2.
+Operation (1 = encrypt, 2 = decrypt, 0 = exit): 1
+Key (at least 7 Romanian letters, no spaces): secret
+Invalid input: Key must contain at least 7 Romanian letters; no spaces.
+Key (at least 7 Romanian letters, no spaces): abc defg
+Invalid input: Rejected character ' ' (U+0020). Allowed letters: AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ (upper/lowercase, cedilla variants accepted); no spaces in the keyword.
+Key (at least 7 Romanian letters, no spaces): criptografie
+Text: Salut!
+Invalid input: Rejected character '!' (U+0021). Allowed letters: AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ (upper/lowercase, cedilla variants accepted); spaces are removed.
+Text: salut
+Normalized key: CRIPTOGRAFIE
+Normalized text: SALUT
+Ciphertext: URȚJM
+
+Operation (1 = encrypt, 2 = decrypt, 0 = exit): 0

@@ -1,0 +1,16 @@
+Laboratory 3 — Romanian Vigenere cipher (task 3.2, student 12)
+Operation (1 = encrypt, 2 = decrypt, 0 = exit): 1
+Key (at least 7 Romanian letters, no spaces): criptografie
+Text: Știința înseamnă putere
+Normalized key: CRIPTOGRAFIE
+Normalized text: ȘTIINȚAÎNSEAMNĂPUTERE
+Ciphertext: VJRXGIGANXNEQDÎDOHLHE
+
+Operation (1 = encrypt, 2 = decrypt, 0 = exit): 2
+Key (at least 7 Romanian letters, no spaces): criptografie
+Text: VJRXGIGANXNEQDÎDOHLHE
+Normalized key: CRIPTOGRAFIE
+Normalized text: VJRXGIGANXNEQDÎDOHLHE
+Plaintext: ȘTIINȚAÎNSEAMNĂPUTERE
+
+Operation (1 = encrypt, 2 = decrypt, 0 = exit): 0
