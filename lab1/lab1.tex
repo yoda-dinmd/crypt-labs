@@ -1,16 +1,7 @@
 \documentclass{utmreport}
-\selectlanguage{english}
-\ifPDFTeX\else\setmonofont{Liberation Mono}\fi
-\utmlogo{assets/UTM_Logo_English.jpeg}
-\institution{Technical University of Moldova}
-\faculty{Faculty of Computers, Informatics, and Microelectronics}
-\department{Department of Software Engineering}
-\studyprogramme{Software Engineering Study Programme}
-\documenttype{Laboratory report no. 1}
-\reporttitle{Caesar Cipher over the Romanian Alphabet}
-\reportsubtitle{Cryptography: standard and keyword-permuted variants}
-\cityyear{Chișinău}{2026}
-\input{metadata}
+\newcommand{\ReportTitle}{Caesar Cipher over the Romanian Alphabet}
+\newcommand{\ReportSubtitle}{\ReportCourse: standard and keyword-permuted variants}
+\input{../latex/report-common.tex}
 \lstset{language=Java}
 \begin{document}
 \makeutmreporttitlepage
@@ -130,6 +121,6 @@ The implementation demonstrates explicit Romanian letter encoding, modular arith
 \addcontentsline{toc}{chapter}{Source code}
 The full Java source, Maven configuration, tests and report sources are maintained in the laboratory repository: \url{\repositoryurl}.
 \begin{thebibliography}{9}
-\bibitem{handout} \textit{Laboratory Work No. 1. Caesar Cipher}. Supplied course handout, Tasks 1.1 and 1.2 and report requirements, pp. 1--4.
+\bibitem{handout} \ReportHandoutReference{1}{Caesar Cipher}{, Tasks 1.1 and 1.2 and report requirements, pp. 1--4.}
 \end{thebibliography}
 \end{document}

@@ -1,0 +1,21 @@
+% Load after defining ReportTitle; optional per-report settings follow below.
+\input{../metadata.tex}
+\providecommand{\ReportNumber}{\expandafter\ReportNumberFromJob\jobname\relax}
+\def\ReportNumberFromJob#1#2#3#4\relax{#4}
+\providecommand{\ReportSubtitle}{}
+\selectlanguage{english}
+\ifPDFTeX\else\setmonofont{Liberation Mono}\fi
+\utmlogo{../latex/assets/UTM_Logo_English.jpeg}
+\documenttype{Laboratory report no. \ReportNumber}
+\reporttitle{\ReportTitle}
+\reportsubtitle{\ReportSubtitle}
+\hypersetup{
+  pdftitle={\ReportTitle},
+  pdfauthor={\UTMStudentName},
+  pdfsubject={\ReportCourse{} laboratory report no. \ReportNumber}
+}
+
+% Shared wording for references to the supplied Cryptography handouts.
+% Arguments: laboratory number, topic, optional descriptive text (including punctuation).
+\newcommand{\ReportHandoutReference}[3]{%
+  \textit{Laboratory Work No. #1. #2}. Supplied course handout#3}

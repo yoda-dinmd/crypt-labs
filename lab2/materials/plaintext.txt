@@ -1,0 +1,36 @@
+on a day nearly 4,000 years ago, in a town called menet khufubordering the thin ribbon of the
+nile, a master scribe sketched out thehieroglyphs that told the story of his lord's life—
+and in so doing heopened the recorded history of cryptology. his was not a system of
+secretwriting as the modern world knows it; he used no fully developed code of
+hieroglyphicsymbol substitutions. his inscription, carved about 1900 b.c. into theliving
+rock in the main chamber of the tomb of the noblemankhnumhotep ii, merely uses some unusual
+hieroglyphic symbols hereand there in place of the more ordinary ones. most occur in the last
+20columns of the inscription's 222, in a section recording the monumentsthat khnumhotep
+had erected in the service of the pharaoh amenemhetii. the intention was not to make it
+hard to read the text. it was toimpart a dignity and authority to it, perhaps in the same way
+that agovernment proclamation will spell out "in the year of our lord onethousand eight
+hundred and sixty three" instead of just writing "1863."the anonymous scribe may also have
+been demonstrating his knowledgefor posterity. thus the inscription was not secret
+writing, but itincorporated one of the essential elements of cryptography: a
+deliberatetransformation of the writing. it is the oldest text known to do so.the
+transformations occur in funerary formulas, in a hymn to thoth,in a chapter of the book of the
+dead, on the sarcophagus of the pharaohseti i, in royal titles displayed in luxor, on the
+architrave of the temple of luxor, on stele, inlaudatory biographic inscriptions. there is
+nothing meant to beconcealed in all this; indeed, many of the statements are repeated
+inordinary form right next to the altered ones. why, then, thetransformations? sometimes
+for essentially the same reason as inkhnumhotep's tomb: to impress the reader. occasionally
+for acalligraphic or decorative effect; rarely, to indicate a contemporarypronunciation; perhaps
+even for a deliberate archaism as a reactionagainst foreign influence.but many inscriptions are
+tinctured, for the first time, with thesecond essential for cryptology—secrecy. in a few
+cases, the secrecy wasintended to increase the mystery and hence the arcane magical powers
+ofcertain religious texts. but the secrecy in many more cases resulted fromthe
+understandable desire of the egyptians to have passersby read theirepitaphs and so confer
+upon the departed the blessings written therein.in egypt, with its concentration upon
+the afterlife, the number of theseinscriptions soon • proliferated to such an extent that
+the attention andthe goodwill of visitors flagged. to revive their interest, the
+scribesdeliberately made the inscriptions a bit obscure. they introduced thecryptographic
+signs to catch the reader's eye, make him wonder, andtempt him into unriddling them — and so
+into reading the blessings. itwas a sort of madison avenue technique in the valley of the
+kings. butthe technique failed utterly. instead of interesting the readers, itevidently
+destroyed even the slightest desire to read the epitaphs, forsoon after the funerary
+cryptography was begun, it was abandoned.
