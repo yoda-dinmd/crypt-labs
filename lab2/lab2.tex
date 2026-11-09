@@ -13,14 +13,12 @@ This laboratory examines the recovery of an English message encrypted with a mon
 \par\utmkeywords{cryptanalysis, substitution, frequency analysis, word patterns, plaintext recovery}
 \end{utmabstract}
 \utmintroduction
-The objective is to recover an English plaintext from a monoalphabetic cryptogram. The attack uses the frequency analysis method described in the laboratory handout \cite{handout}. Only letters are encrypted; numbers, spaces and punctuation provide additional information. The required report explains the successive deductions, as in the handout's worked example.
+The objective is to recover an English plaintext from a monoalphabetic cryptogram. Only letters are encrypted; numbers, spaces and punctuation provide additional information. The required report explains the successive deductions, as in the handout's worked example.
 
-Variant 1 is used to match the supplied reference report by Gabriel Balan \cite{reference}. Its four frequency screenshots and deduction sequence are reused with attribution. The analysis below reconstructs the substitutions and verifies them against the Variant 1 ciphertext in the handout. Intermediate extracts are reconstructed text, not new captures of an interactive session. This laboratory requires a report only and contains no application implementation.
-
-The report follows the structure of Laboratory Work No. 1: theoretical background, practical analysis, results and conclusions. Complete source and result texts are included in the appendices. The focus is on explaining why each proposed substitution is plausible and how it fits the rest of the message.
+Its four frequency screenshots and deduction sequence are reused with attribution. The analysis below reconstructs the substitutions and verifies them against the Variant 1 ciphertext in the handout. Intermediate extracts are reconstructed text, not new captures of an interactive session. This laboratory requires a report only and contains no application implementation.
 
 \chapter{Short theory}
-A fixed substitution changes the labels of letters while preserving much of the structure that makes a language recognizable. The following properties form the basis of the attack described in the handout \cite{handout}.
+A fixed substitution changes the labels of letters while preserving much of the structure that makes a language recognizable.
 \section{Monoalphabetic substitution}
 Let $A$ be the 26-letter English alphabet and let $\pi$ be a permutation of $A$. For plaintext letter $p_i$ and ciphertext letter $c_i$, encryption and decryption are:
 \begin{equation}

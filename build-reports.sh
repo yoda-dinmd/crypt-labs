@@ -1,20 +1,91 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 command -v tectonic >/dev/null 2>&1 || {
   echo 'Tectonic is required to build reports.' >&2
   exit 1
 }
-mkdir -p "$ROOT/reports"
+mkdir -p "$repo_dir/reports"
 
-# Compile from each lab so screenshots and shared inputs resolve consistently.
-# Extra arguments are forwarded to Tectonic (for example, --only-cached).
-for source in lab1/lab1.tex lab2/lab2.tex lab3/lab3.tex; do
-  echo "Building $source"
+all_labs=(lab1 lab2 lab3 lab4)
+
+usage() {
+  echo "Usage: $(basename "$0") [all | <lab> ...]"
+  echo "Examples:"
+  echo "  $(basename "$0") 4          # build lab4"
+  echo "  $(basename "$0") lab4       # build lab4"
+  echo "  $(basename "$0") all        # build all labs (lab1..lab4)"
+  echo "  $(basename "$0")            # interactive prompt"
+}
+
+resolve_lab() {
+  local arg="${1%/}"
+  arg="${arg%.tex}"
+  arg="${arg#*/}"
+  if [[ "$arg" =~ ^[0-9]+$ ]]; then
+    echo "lab$arg"
+  elif [[ "$arg" =~ ^lab[0-9]+$ ]]; then
+    echo "$arg"
+  else
+    echo ""
+  fi
+}
+
+selected=()
+if [[ $# -eq 0 ]]; then
+  if [[ -t 0 ]]; then
+    echo "Available reports: 1 2 3 4 (or 'all')"
+    read -r -p "Select report(s) to build [all]: " input
+    if [[ -z "${input// }" || "$input" == "all" || "$input" == "a" ]]; then
+      selected=("${all_labs[@]}")
+    else
+      read -r -a args <<< "$input"
+      for arg in "${args[@]}"; do
+        lab="$(resolve_lab "$arg")"
+        if [[ -z "$lab" ]]; then
+          echo "Error: unknown lab '$arg'" >&2
+          usage >&2
+          exit 1
+        fi
+        selected+=("$lab")
+      done
+    fi
+  else
+    selected=("${all_labs[@]}")
+  fi
+else
+  for arg in "$@"; do
+    case "$arg" in
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      all|a)
+        selected=("${all_labs[@]}")
+        ;;
+      *)
+        lab="$(resolve_lab "$arg")"
+        if [[ -z "$lab" ]]; then
+          echo "Error: unknown lab '$arg'" >&2
+          usage >&2
+          exit 1
+        fi
+        selected+=("$lab")
+        ;;
+    esac
+  done
+fi
+
+for lab in "${selected[@]}"; do
+  source_file="$repo_dir/$lab/$lab.tex"
+  if [[ ! -f "$source_file" ]]; then
+    echo "Error: $source_file not found" >&2
+    exit 1
+  fi
+  echo "Building $lab -> reports/$lab.pdf ..."
   (
-    cd -- "$ROOT/$(dirname -- "$source")"
-    tectonic "$@" -Z "search-path=$ROOT/latex" \
-      --outdir "$ROOT/reports" "$(basename -- "$source")"
+    cd "$repo_dir/$lab"
+    tectonic -Z "search-path=$repo_dir/latex" --outdir "$repo_dir/reports" "$lab.tex"
   )
 done

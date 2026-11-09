@@ -1,0 +1,33 @@
+Laboratory 4 — DES key permutation K+ (task 2.1, student 12)
+Mode (1 = manual 8-symbol key, 2 = random 8-symbol key, 0 = exit): 2
+Generated random key: Q4G5wDqb
+Step 1 — ASCII encoding and 64-bit key K (bits 8, 16, ..., 64 are parity bits):
+Byte  Symbol  ASCII (dec/hex)  Bits    8-bit binary  Data (1..7)  Parity (8)
+   1    'Q'       81 / 0x51   1..8    01010001      0101000      1 (k8)
+   2    '4'       52 / 0x34   9..16   00110100      0011010      0 (k16)
+   3    'G'       71 / 0x47   17..24  01000111      0100011      1 (k24)
+   4    '5'       53 / 0x35   25..32  00110101      0011010      1 (k32)
+   5    'w'      119 / 0x77   33..40  01110111      0111011      1 (k40)
+   6    'D'       68 / 0x44   41..48  01000100      0100010      0 (k48)
+   7    'q'      113 / 0x71   49..56  01110001      0111000      1 (k56)
+   8    'b'       98 / 0x62   57..64  01100010      0110001      0 (k64)
+K (hex): 51 34 47 35 77 44 71 62
+K (64b): 01010001 00110100 01000111 00110101 01110111 01000100 01110001 01100010
+
+Step 2 — Permuted Choice 1 (PC-1) table and intermediate bit selection:
+Half  Row  PC-1 bit positions    Selected bits from K                       Row bits
+C0      1  57 49 41 33 25 17  9  k57=0 k49=0 k41=0 k33=0 k25=0 k17=0 k9=0   0000000
+C0      2   1 58 50 42 34 26 18  k1=0  k58=1 k50=1 k42=1 k34=1 k26=0 k18=1  0111101
+C0      3  10  2 59 51 43 35 27  k10=0 k2=1  k59=1 k51=1 k43=0 k35=1 k27=1  0111011
+C0      4  19 11  3 60 52 44 36  k19=0 k11=1 k3=0  k60=0 k52=1 k44=0 k36=1  0100101
+D0      5  63 55 47 39 31 23 15  k63=1 k55=0 k47=0 k39=1 k31=0 k23=1 k15=0  1001010
+D0      6   7 62 54 46 38 30 22  k7=0  k62=0 k54=0 k46=1 k38=1 k30=1 k22=1  0001111
+D0      7  14  6 61 53 45 37 29  k14=1 k6=0  k61=0 k53=0 k45=0 k37=0 k29=0  1000000
+D0      8  21 13  5 28 20 12  4  k21=0 k13=0 k5=0  k28=1 k20=0 k12=1 k4=1   0001011
+
+Step 3 — Output 56-bit permuted key K+:
+C0 (28 bits): 0000000 0111101 0111011 0100101
+D0 (28 bits): 1001010 0001111 1000000 0001011
+K+ (56 bits): 0000000 0111101 0111011 0100101 1001010 0001111 1000000 0001011
+
+Mode (1 = manual 8-symbol key, 2 = random 8-symbol key, 0 = exit): 0
