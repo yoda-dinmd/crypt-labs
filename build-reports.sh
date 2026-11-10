@@ -2,20 +2,16 @@
 set -euo pipefail
 
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-command -v tectonic >/dev/null 2>&1 || {
-  echo 'Tectonic is required to build reports.' >&2
-  exit 1
-}
 mkdir -p "$repo_dir/reports"
 
-all_labs=(lab1 lab2 lab3 lab4)
+all_labs=(lab1 lab2 lab3 lab4 lab5 lab6 lab7 lab8 lab9 lab10 lab11 lab12 lab13)
 
 usage() {
   echo "Usage: $(basename "$0") [all | <lab> ...]"
   echo "Examples:"
-  echo "  $(basename "$0") 4          # build lab4"
-  echo "  $(basename "$0") lab4       # build lab4"
-  echo "  $(basename "$0") all        # build all labs (lab1..lab4)"
+  echo "  $(basename "$0") 11 12 13   # build lab11, lab12, and lab13"
+  echo "  $(basename "$0") lab13      # build lab13"
+  echo "  $(basename "$0") all        # build all labs (lab1..lab13)"
   echo "  $(basename "$0")            # interactive prompt"
 }
 
@@ -33,9 +29,10 @@ resolve_lab() {
 }
 
 selected=()
+
 if [[ $# -eq 0 ]]; then
   if [[ -t 0 ]]; then
-    echo "Available reports: 1 2 3 4 (or 'all')"
+    echo "Available reports: 1 2 3 4 5 6 7 8 9 10 11 12 13 (or 'all')"
     read -r -p "Select report(s) to build [all]: " input
     if [[ -z "${input// }" || "$input" == "all" || "$input" == "a" ]]; then
       selected=("${all_labs[@]}")
@@ -84,8 +81,5 @@ for lab in "${selected[@]}"; do
     exit 1
   fi
   echo "Building $lab -> reports/$lab.pdf ..."
-  (
-    cd "$repo_dir/$lab"
-    tectonic -Z "search-path=$repo_dir/latex" --outdir "$repo_dir/reports" "$lab.tex"
-  )
+  (cd "$repo_dir/$lab" && tectonic -Z "search-path=$repo_dir/latex" --outdir "$repo_dir/reports" "$lab.tex")
 done

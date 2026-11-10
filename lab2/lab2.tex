@@ -1,252 +1,279 @@
 \documentclass{utmreport}
 \newcommand{\ReportTitle}{Cryptanalysis of Monoalphabetic Ciphers}
-\newcommand{\ReportSubtitle}{\ReportCourse: frequency analysis and substitution recovery}
+\newcommand{\ReportSubtitle}{\ReportCourse: Variant 12, frequency analysis and substitution recovery}
 \input{../latex/report-common.tex}
 \setcounter{tocdepth}{1}
-\lstset{language={},literate={—}{{\textemdash}}1 {•}{{\textbullet}}1}
+\lstset{language={},literate={—}{{\textemdash}}1}
 \begin{document}
 \makeutmreporttitlepage
 \tableofcontents
 \clearpage
 \begin{utmabstract}[Abstract]
-This laboratory examines the recovery of an English message encrypted with a monoalphabetic substitution. Letter frequencies provide initial hypotheses, while repeated words, common letter combinations and grammatical context constrain the remaining substitutions. The report reconstructs a 19-step analysis of Variant 1, supported by four supplied frequency screenshots. The cryptogram contains 2,567 letters and 25 distinct ciphertext symbols. All observed symbols are resolved consistently; the final unused alphabet pair is inferred by elimination. Intermediate extracts illustrate the gradual recovery of the passage, and the complete ciphertext and literal plaintext are preserved for comparison. The result demonstrates that a large substitution key space does not conceal the statistical structure of natural language.
-\par\utmkeywords{cryptanalysis, substitution, frequency analysis, word patterns, plaintext recovery}
+This laboratory examines the recovery of an English message encrypted with a monoalphabetic substitution cipher for Variant 12. Letter frequencies provide initial hypotheses, while short recurring words, time expressions, common letter combinations and grammatical context constrain the remaining substitutions. The cryptogram contains 2,725 alphabetic characters and 24 distinct ciphertext symbols. All observed symbols are resolved consistently through 12 progressive deduction stages, and the two unused ciphertext letters are paired with the remaining unused plaintext letters by elimination. Intermediate extracts and frequency table captures illustrate the gradual recovery of the passage about the Viennese Black Chamber (\textit{Geheime Kabinettskanzlei}), and the complete ciphertext and literal plaintext are preserved in the appendices.
+\par\utmkeywords{cryptanalysis, monoalphabetic substitution, frequency analysis, word patterns, plaintext recovery}
 \end{utmabstract}
-\utmintroduction
-The objective is to recover an English plaintext from a monoalphabetic cryptogram. Only letters are encrypted; numbers, spaces and punctuation provide additional information. The required report explains the successive deductions, as in the handout's worked example.
 
-Its four frequency screenshots and deduction sequence are reused with attribution. The analysis below reconstructs the substitutions and verifies them against the Variant 1 ciphertext in the handout. Intermediate extracts are reconstructed text, not new captures of an interactive session. This laboratory requires a report only and contains no application implementation.
+\utmintroduction
+The objective of this laboratory work is to decrypt the English monoalphabetic cryptogram assigned for Variant 12 using frequency analysis and linguistic pattern recognition \cite{repo}. Only alphabetic characters are encrypted; spaces, digits and punctuation remain intact and provide structural clues during cryptanalysis.
 
 \chapter{Short theory}
-A fixed substitution changes the labels of letters while preserving much of the structure that makes a language recognizable.
+A fixed substitution changes the labels of letters while preserving the statistical and structural patterns that make a natural language recognizable.
+
 \section{Monoalphabetic substitution}
 Let $A$ be the 26-letter English alphabet and let $\pi$ be a permutation of $A$. For plaintext letter $p_i$ and ciphertext letter $c_i$, encryption and decryption are:
 \begin{equation}
 c_i=\pi(p_i),\qquad p_i=\pi^{-1}(c_i).
 \end{equation}
-The same plaintext letter always produces the same ciphertext symbol. Consequently, letter counts, repeated-letter patterns and word lengths survive encryption. A general substitution has $26!\approx4.03\times10^{26}$ possible keys, but this large key space does not prevent an attack based on language patterns. Unlike brute force, frequency analysis tries to infer the permutation from the message itself.
+The same plaintext letter always produces the same ciphertext symbol. Consequently, letter counts, repeated-letter patterns and word lengths survive encryption. A general substitution has $26!\approx4.03\times10^{26}$ possible keys, making exhaustive key search infeasible, but frequency analysis recovers the permutation directly from statistical and lexical properties of the ciphertext.
 
 \section{Letter frequencies}
 For a ciphertext of $N$ alphabetic characters, the relative frequency of symbol $c$ is:
 \begin{equation}
 f_C(c)=\frac{n_C(c)}{N}\times100\%,
 \end{equation}
-where $n_C(c)$ denotes its count. Uppercase and lowercase letters are counted together; digits, punctuation, spaces and line breaks are excluded. For a sufficiently long text, the distribution often resembles the average distribution of its language. English is used here because the assignment specifies an English plaintext.
-
-Table~\ref{tab:english} reproduces the English reference values from the handout. They support initial guesses, not a unique key: topic and vocabulary can substantially change a particular message's distribution.
+where $n_C(c)$ denotes its count. Uppercase and lowercase letters are counted together; digits, punctuation, spaces and line breaks are excluded. Table~\ref{tab:english} lists the standard reference frequencies of English letters, alongside the observed counts and percentages in Variant 12 ($N=2{,}725$).
 \clearpage
 \begin{table}[!htbp]
-\caption{English letter frequencies in percent, from the handout \cite{handout}}
+\caption{Standard English letter frequencies and observed Variant 12 ciphertext distribution ($N=2{,}725$)}
 \label{tab:english}\centering
-\begin{tabular}{crcr}\hline
-Letter & Frequency & Letter & Frequency\\\hline
-A & 8.17 & N & 6.75\\ B & 1.49 & O & 7.51\\
-C & 2.78 & P & 1.93\\ D & 4.25 & Q & 0.09\\
-E & 12.70 & R & 5.99\\ F & 2.23 & S & 6.33\\
-G & 2.01 & T & 9.06\\ H & 6.09 & U & 2.76\\
-I & 6.97 & V & 0.98\\ J & 0.15 & W & 2.36\\
-K & 0.77 & X & 0.15\\ L & 4.03 & Y & 1.97\\
-M & 2.41 & Z & 0.07\\\hline
+\begin{tabular}{crcrcr}\hline
+English & Ref.\ (\%) & Ciphertext (ranked) & Count & Observed (\%) & Alphabetical ($A$--$Z$)\\\hline
+E & 12.70 & V & 380 & 13.94 & A: 45 (1.65\%)\\
+T &  9.06 & W & 274 & 10.06 & B: 0 (0.00\%)\\
+A &  8.17 & T & 227 &  8.33 & C: 48 (1.76\%)\\
+O &  7.51 & N & 185 &  6.79 & D: 64 (2.35\%)\\
+I &  6.97 & P & 185 &  6.79 & E: 3 (0.11\%)\\
+N &  6.75 & G & 176 &  6.46 & F: 42 (1.54\%)\\
+S &  6.33 & X & 174 &  6.39 & G: 176 (6.46\%)\\
+H &  6.09 & I & 170 &  6.24 & H: 83 (3.05\%)\\
+R &  5.99 & Q & 142 &  5.21 & I: 170 (6.24\%)\\
+D &  4.25 & S & 120 &  4.40 & J: 51 (1.87\%)\\
+L &  4.03 & O & 111 &  4.07 & K: 19 (0.70\%)\\
+C &  2.78 & H &  83 &  3.05 & L: 21 (0.77\%)\\
+U &  2.76 & U &  68 &  2.50 & M: 0 (0.00\%)\\
+M &  2.41 & Z &  68 &  2.50 & N: 185 (6.79\%)\\
+W &  2.36 & R &  65 &  2.39 & O: 111 (4.07\%)\\
+F &  2.23 & D &  64 &  2.35 & P: 185 (6.79\%)\\
+G &  2.01 & J &  51 &  1.87 & Q: 142 (5.21\%)\\
+Y &  1.97 & C &  48 &  1.76 & R: 65 (2.39\%)\\
+P &  1.93 & A &  45 &  1.65 & S: 120 (4.40\%)\\
+B &  1.49 & F &  42 &  1.54 & T: 227 (8.33\%)\\
+V &  0.98 & L &  21 &  0.77 & U: 68 (2.50\%)\\
+K &  0.77 & K &  19 &  0.70 & V: 380 (13.94\%)\\
+J &  0.15 & Y &   4 &  0.15 & W: 274 (10.06\%)\\
+X &  0.15 & E &   3 &  0.11 & X: 174 (6.39\%)\\
+Q &  0.09 & B &   0 &  0.00 & Y: 4 (0.15\%)\\
+Z &  0.07 & M &   0 &  0.00 & Z: 68 (2.50\%)\\\hline
 \end{tabular}
 \end{table}
 
 \section{Word patterns and consistency}
-Common English digraphs (two-letter sequences) include TH, HE, AN, IN, ER and ON. Common trigraphs (three-letter sequences) include THE, AND, THA, ENT and ION. The ordinary one-letter words \textit{a} and \textit{i}, doubled letters and repeated short words also help constrain the key. For example, the partial pattern \texttt{tQe} strongly suggests \texttt{the}.
-
-A useful hypothesis must explain several occurrences without contradicting earlier deductions. Each ciphertext symbol has one plaintext value, and different ciphertext symbols have different plaintext values. A guessed letter that produces one readable word but breaks several others should be reconsidered. Proper names and rare words become useful later, after common words have established most of the key.
+Common English digraphs include \texttt{TH}, \texttt{HE}, \texttt{AN}, \texttt{IN}, \texttt{ER} and \texttt{ON}, while common trigraphs include \texttt{THE}, \texttt{AND}, \texttt{THA}, \texttt{ENT} and \texttt{ION}. One-letter words (\textit{a} and \textit{I}), doubled letters, time notations such as \texttt{a.m.} and \texttt{p.m.}, and repeated short words constrain the substitution key. Because $\pi$ is a bijection, each ciphertext symbol maps to a unique plaintext letter, and every tentative replacement must remain consistent across the entire message.
 
 \chapter{Practical analysis}
-The practical work reconstructs the solution sequence in the supplied reference \cite{reference}. All mappings below run from ciphertext to plaintext: $V\rightarrow e$ means that ciphertext V represents plaintext e. In partial decryptions, unresolved symbols are uppercase and resolved letters are lowercase.
+All mappings below run from ciphertext to plaintext: $V\rightarrow e$ means that ciphertext \texttt{V} represents plaintext \texttt{e}. In intermediate decryptions, unresolved ciphertext symbols remain uppercase and resolved plaintext letters are written in lowercase.
 
-\section{Frequency evidence}
-The supplied cryptogram contains 2,567 letters and uses 25 distinct ciphertext symbols. Ciphertext M does not occur. Figures~\ref{fig:cipherfreq} and~\ref{fig:englishfreq} show the ranked frequency tables extracted from the reference report. The integer counts in the ciphertext screenshot agree with the counts obtained from Variant 1 in the handout.
-\begin{figure}[htbp]
-\centering\includegraphics[width=\textwidth]{screenshots/ciphertext-frequency.png}
-\caption{Ranked ciphertext frequencies, reused from the reference report \cite{reference}}\label{fig:cipherfreq}
-\end{figure}
-\begin{figure}[htbp]
-\centering\includegraphics[width=\textwidth]{screenshots/english-frequency.png}
-\caption{Ranked English frequencies, reused from the reference report \cite{reference}}\label{fig:englishfreq}
+\section{Initial frequency distribution}
+The Variant 12 cryptogram contains $2{,}725$ letters and 24 distinct ciphertext symbols; \texttt{B} and \texttt{M} do not appear. Figure~\ref{fig:part1} shows the initial ranked frequency distribution of the intercept compared with standard English letter frequencies.
+\begin{figure}[!htbp]
+\centering\includegraphics[width=\textwidth]{screenshots/part1.png}
+\caption{Initial frequency distribution of Variant 12 compared with standard English frequencies}\label{fig:part1}
 \end{figure}
 
-Ciphertext V appears 327 times, giving $327/2567\times100\%\approx12.74\%$. Its frequency is close to the English reference of 12.70\% for e. Ciphertext W appears 276 times, approximately 10.75\%, and is a candidate for t. The screenshot rounds these values to 12.7\% and 10.8\%.
-
-Ranking alone is insufficient. Ciphertext N is third with 205 occurrences, but represents o, whereas T is sixth with 178 occurrences and represents a. These substitutions must be established from words, rather than by matching two sorted lists mechanically.
+Ciphertext \texttt{V} occurs 380 times ($13.94\%$, displayed as $13.9\%$) and \texttt{W} occurs 274 times ($10.06\%$, displayed as $10.1\%$), closely matching the leading English letters \texttt{e} ($12.7\%$) and \texttt{t} ($9.1\%$). Ciphertext \texttt{T} is third with 227 occurrences ($8.33\%$), while \texttt{N} and \texttt{P} are tied at 185 occurrences ($6.79\%$).
 
 \clearpage
-The alphabetically ordered profiles in Figures~\ref{fig:englishprofile} and~\ref{fig:cipherprofile} illustrate the same statistical clues. The strongest English peaks occur at E and T; the strongest ciphertext peaks occur at V and W. These are separate distributions: the passage need not match average English exactly.
-\begin{figure}[htbp]
+Figures~\ref{fig:englishprofile} and~\ref{fig:cipherprofile} compare the alphabetical frequency profile of standard English with the alphabetical frequency profile of the Variant 12 ciphertext. The prominent peaks at \texttt{E} and \texttt{T} in English correspond to the peaks at \texttt{V} and \texttt{W} in the encrypted text.
+\begin{figure}[!htbp]
 \centering\includegraphics[width=0.78\textwidth]{screenshots/english-profile.png}
-\caption{English frequency profile, reused from the reference report \cite{reference}}\label{fig:englishprofile}
+\caption{Alphabetical frequency profile of standard English}\label{fig:englishprofile}
 \end{figure}
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering\includegraphics[width=0.78\textwidth]{screenshots/ciphertext-profile.png}
-\caption{Ciphertext frequency profile, reused from the reference report \cite{reference}}\label{fig:cipherprofile}
+\caption{Alphabetical frequency profile of the Variant 12 ciphertext}\label{fig:cipherprofile}
 \end{figure}
-\clearpage
-\section{Steps 1--7: common letters}
-The first substitutions combine frequency hypotheses with short recurring words. The sequence follows the reference report \cite{reference}:
-\begin{enumerate}
-\item select $V\rightarrow e$: V occurs 327 times (12.74\%), making it the strongest candidate for the most frequent English letter;
-\item select $W\rightarrow t$: W occurs 276 times (10.75\%); this second major peak suggests t, and the two replacements expose repeated instances of \texttt{tQe};
-\item infer $Q\rightarrow h$: interpreting \texttt{tQe} as \texttt{the} confirms a common word and supports the previous substitutions;
-\item infer $T\rightarrow a$: \texttt{thTt} becomes \texttt{that}, and the same symbol also appears as a one-letter word;
-\item infer $P\rightarrow s$: \texttt{thePe} becomes \texttt{these}; P occurs 165 times (6.43\%), close to the English reference for s;
-\item infer $N\rightarrow o$: the frequent two-letter pattern \texttt{tN} becomes \texttt{to}; its 205 occurrences (7.99\%) are consistent with a common vowel;
-\item infer $X\rightarrow i$: \texttt{Xt} becomes \texttt{it}, and 198 occurrences (7.71\%) support a common letter;
-\end{enumerate}
-
-\section{Steps 8--12: phrases}
-Once short words are readable, longer phrases constrain several unknown letters at once:
-\begin{enumerate}[start=8]
-\item infer $Z\rightarrow m$, $I\rightarrow r$ and $G\rightarrow n$: \texttt{the saZe IeasoG as} becomes \texttt{the same reason as}; the phrase supplies three compatible mappings;
-\item infer $O\rightarrow d$: \texttt{Oesire to reaO} becomes \texttt{desire to read}, with the same letter fitting both ends of the phrase;
-\item infer $F\rightarrow y$, $S\rightarrow l$ and $J\rightarrow g$: \texttt{on a daF nearSF 4,000 Fears aJo} becomes \texttt{on a day nearly 4,000 years ago}; repeated F receives the same value in three words;
-\item infer $R\rightarrow w$ and $H\rightarrow c$: \texttt{in a toRn Halled menet} becomes \texttt{in a town called menet}; the ordinary words can be solved without first identifying the place name;
-\item infer $C\rightarrow f$: \texttt{story oC his lord's liCe} becomes \texttt{story of his lord's life}, resolving both a common preposition and a noun;
-\end{enumerate}
 
 \clearpage
-\section{Steps 13--19: remaining observed letters}
-Context supplies the less frequent letters that are difficult to identify statistically:
-\begin{enumerate}[start=13]
-\item infer $L\rightarrow k$: \texttt{world Lnows it} becomes \texttt{world knows it};
-\item infer $D\rightarrow u$ and $A\rightarrow b$: \texttt{a master scriAe sketched oDt} becomes \texttt{a master scribe sketched out}; these pairs also clarify \texttt{tomb} and \texttt{about};
-\item infer $U\rightarrow p$: \texttt{thehieroglyUhs} becomes \texttt{thehieroglyphs}; the joined words reflect a missing space in the supplied text;
-\item infer $B\rightarrow q$: \texttt{techniBue} becomes \texttt{technique}; B appears only twice, making word context more informative than its frequency;
-\item infer $K\rightarrow v$: \texttt{eKen} becomes \texttt{even} in the phrase ``even the slightest''; this pair also resolves \texttt{developed} and \texttt{service};
-\item infer $Y\rightarrow x$: \texttt{read the teYt} becomes \texttt{read the text}; Y occurs eight times;
-\item infer $E\rightarrow j$: \texttt{instead of Eust writing} becomes \texttt{instead of just writing}; E occurs once and is the last observed ciphertext symbol resolved;
-\end{enumerate}
+\section{Progressive substitution steps}
+\subsection{Step 1: Substituting $V\rightarrow e$ and $W\rightarrow t$}
+Based on the two highest frequency peaks (\texttt{V} at $13.9\%$ and \texttt{W} at $10.1\%$), \texttt{V} is replaced with \texttt{e} and \texttt{W} with \texttt{t} (Figure~\ref{fig:part2}).
+\begin{figure}[!htbp]
+\centering\includegraphics[width=\textwidth]{screenshots/part2.png}
+\caption{Substitution of $V\rightarrow e$ and $W\rightarrow t$}\label{fig:part2}
+\end{figure}
+\begin{lstlisting}
+Xt ITG RXtQ TSZNPt DGAeSXeKTASe eCCXHXeGHF. tQe ATJP NC ZTXS CNI OeSXKeIFtQTt ZNIGXGJ tN tQe
+eZATPPXeP XG KXeGGT ReIe AINDJQt tN tQe ASTHLHQTZAeI eTHQ OTF Tt 7 T.Z. tQeIe tQe SetteIP ReIe
+NUeGeO AF ZeStXGJtQeXI PeTSP RXtQ T HTGOSe. tQe NIOeI NC tQe SetteIP XG TG eGKeSNUe RTPGNteO
+TGO tQe SetteIP JXKeG tN T PDAOXIeHtNI. Qe IeTO tQeZ TGO NIOeIeOtQe XZUNItTGt UTItP HNUXeO.
+\end{lstlisting}
+
+\subsection{Step 2: Substituting $Q\rightarrow h$}
+The partial decryption exposes repeated occurrences of the three-letter word \texttt{tQe} and the pattern \texttt{tQTt}. Setting $Q\rightarrow h$ (142 occurrences, $5.2\%$) turns \texttt{tQe} into \texttt{the} and \texttt{tQTt} into \texttt{thTt} (Figure~\ref{fig:part3}).
+\begin{figure}[!htbp]
+\centering\includegraphics[width=\textwidth]{screenshots/part3.png}
+\caption{Substitution of $Q\rightarrow h$ to form \texttt{the}}\label{fig:part3}
+\end{figure}
+\begin{lstlisting}
+Xt ITG RXth TSZNPt DGAeSXeKTASe eCCXHXeGHF. the ATJP NC ZTXS CNI OeSXKeIFthTt ZNIGXGJ tN the
+eZATPPXeP XG KXeGGT ReIe AINDJht tN the ASTHLHhTZAeI eTHh OTF Tt 7 T.Z. theIe the SetteIP ReIe
+NUeGeO AF ZeStXGJtheXI PeTSP RXth T HTGOSe. the NIOeI NC the SetteIP XG TG eGKeSNUe RTPGNteO
+TGO the SetteIP JXKeG tN T PDAOXIeHtNI. he IeTO theZ TGO NIOeIeOthe XZUNItTGt UTItP HNUXeO.
+\end{lstlisting}
+
+\clearpage
+\subsection{Step 3: Substituting $N\rightarrow o$}
+The frequent two-letter word \texttt{tN} before \texttt{the} and \texttt{T} indicates the preposition \texttt{to}. Setting $N\rightarrow o$ (185 occurrences, $6.8\%$) resolves \texttt{to}, \texttt{oC}, \texttt{CoI} and \texttt{tRo} (Figure~\ref{fig:part4}).
+\begin{figure}[!htbp]
+\centering\includegraphics[width=\textwidth]{screenshots/part4.png}
+\caption{Substitution of $N\rightarrow o$ to form \texttt{to}}\label{fig:part4}
+\end{figure}
+\begin{lstlisting}
+Xt ITG RXth TSZoPt DGAeSXeKTASe eCCXHXeGHF. the ATJP oC ZTXS CoI OeSXKeIFthTt ZoIGXGJ to the
+eZATPPXeP XG KXeGGT ReIe AIoDJht to the ASTHLHhTZAeI eTHh OTF Tt 7 T.Z. theIe the SetteIP ReIe
+oUeGeO AF ZeStXGJtheXI PeTSP RXth T HTGOSe. the oIOeI oC the SetteIP XG TG eGKeSoUe RTPGoteO
+TGO the SetteIP JXKeG to T PDAOXIeHtoI. he IeTO theZ TGO oIOeIeOthe XZUoItTGt UTItP HoUXeO.
+\end{lstlisting}
+
+\subsection{Step 4: Substituting $T\rightarrow a$}
+Ciphertext \texttt{T} (227 occurrences, $8.3\%$) appears both as a standalone one-letter word and inside \texttt{thTt}, \texttt{Tt 7 T.Z.} and \texttt{eTHh}. Substituting $T\rightarrow a$ yields \texttt{a}, \texttt{that}, \texttt{at} and \texttt{eaHh} (Figure~\ref{fig:part5}).
+\begin{figure}[!htbp]
+\centering\includegraphics[width=\textwidth]{screenshots/part5.png}
+\caption{Substitution of $T\rightarrow a$}\label{fig:part5}
+\end{figure}
+\begin{lstlisting}
+Xt IaG RXth aSZoPt DGAeSXeKaASe eCCXHXeGHF. the AaJP oC ZaXS CoI OeSXKeIFthat ZoIGXGJ to the
+eZAaPPXeP XG KXeGGa ReIe AIoDJht to the ASaHLHhaZAeI eaHh OaF at 7 a.Z. theIe the SetteIP ReIe
+oUeGeO AF ZeStXGJtheXI PeaSP RXth a HaGOSe. the oIOeI oC the SetteIP XG aG eGKeSoUe RaPGoteO
+aGO the SetteIP JXKeG to a PDAOXIeHtoI. he IeaO theZ aGO oIOeIeOthe XZUoItaGt UaItP HoUXeO.
+\end{lstlisting}
+
+\clearpage
+\subsection{Step 5: Substituting $R\rightarrow w$}
+Patterns such as \texttt{tRo}, \texttt{RXth}, \texttt{ReIe}, \texttt{RaP} and \texttt{RheG} identify $R\rightarrow w$ (65 occurrences, $2.4\%$), producing \texttt{two}, \texttt{with} (\texttt{wXth}), \texttt{were} (\texttt{weIe}) and \texttt{when} (\texttt{wheG}) (Figure~\ref{fig:part6}).
+\begin{figure}[!htbp]
+\centering\includegraphics[width=\textwidth]{screenshots/part6.png}
+\caption{Substitution of $R\rightarrow w$ to form words such as \texttt{two}}\label{fig:part6}
+\end{figure}
+\begin{lstlisting}
+Xt IaG wXth aSZoPt DGAeSXeKaASe eCCXHXeGHF. the AaJP oC ZaXS CoI OeSXKeIFthat ZoIGXGJ to the
+eZAaPPXeP XG KXeGGa weIe AIoDJht to the ASaHLHhaZAeI eaHh OaF at 7 a.Z. theIe the SetteIP weIe
+oUeGeO AF ZeStXGJtheXI PeaSP wXth a HaGOSe. the oIOeI oC the SetteIP XG aG eGKeSoUe waPGoteO
+aGO the SetteIP JXKeG to a PDAOXIeHtoI. he IeaO theZ aGO oIOeIeOthe XZUoItaGt UaItP HoUXeO.
+\end{lstlisting}
+
+\subsection{Step 6: Substituting $U\rightarrow p$ and $Z\rightarrow m$}
+Time expressions throughout the passage—such as \texttt{at 7 a.Z.}, \texttt{9:30 a.Z.}, \texttt{10 a.Z.}, \texttt{2U.Z.}, \texttt{7 U.Z.} and \texttt{6:30 U.Z.}—immediately determine $Z\rightarrow m$ and $U\rightarrow p$ (each occurring 68 times, $2.5\%$), forming \texttt{a.m.} and \texttt{p.m.} as well as \texttt{them} and \texttt{opeGeO}.
+\begin{lstlisting}
+Xt IaG wXth aSmoPt DGAeSXeKaASe eCCXHXeGHF. the AaJP oC maXS CoI OeSXKeIFthat moIGXGJ to the
+emAaPPXeP XG KXeGGa weIe AIoDJht to the ASaHLHhamAeI eaHh OaF at 7 a.m. theIe the SetteIP weIe
+opeGeO AF meStXGJtheXI PeaSP wXth a HaGOSe. the oIOeI oC the SetteIP XG aG eGKeSope waPGoteO
+aGO the SetteIP JXKeG to a PDAOXIeHtoI. he IeaO them aGO oIOeIeOthe XmpoItaGt paItP HopXeO.
+\end{lstlisting}
+
+\subsection{Step 7: Substituting $P\rightarrow s$}
+Short words and word endings such as \texttt{waP}, \texttt{aP}, \texttt{aSmoPt}, \texttt{thePe} and \texttt{PeaSP} establish $P\rightarrow s$ (185 occurrences, $6.8\%$), giving \texttt{was}, \texttt{as}, \texttt{aSmost} and \texttt{these}.
+\begin{lstlisting}
+Xt IaG wXth aSmost DGAeSXeKaASe eCCXHXeGHF. the AaJs oC maXS CoI OeSXKeIFthat moIGXGJ to the
+emAassXes XG KXeGGa weIe AIoDJht to the ASaHLHhamAeI eaHh OaF at 7 a.m. theIe the SetteIs weIe
+opeGeO AF meStXGJtheXI seaSs wXth a HaGOSe. the oIOeI oC the SetteIs XG aG eGKeSope wasGoteO
+aGO the SetteIs JXKeG to a sDAOXIeHtoI. he IeaO them aGO oIOeIeOthe XmpoItaGt paIts HopXeO.
+\end{lstlisting}
+
+\subsection{Step 8: Substituting $I\rightarrow r$}
+The pattern \texttt{pIopeI} alongside \texttt{theIe}, \texttt{weIe}, \texttt{theXI} and \texttt{oIOeI} identifies $I\rightarrow r$ (170 occurrences, $6.2\%$), resolving \texttt{proper}, \texttt{there} and \texttt{were}.
+
+\clearpage
+\subsection{Step 9: Substituting $S\rightarrow l$, $C\rightarrow f$ and $X\rightarrow i$}
+In the clause \texttt{the Setters were retDrGeO to the post oCCXHe}, \texttt{Setters} is \texttt{letters} ($S\rightarrow l$, 120 occurrences, $4.4\%$) and \texttt{post oCCXHe} is \texttt{post office} ($C\rightarrow f$, 48 occurrences, $1.8\%$; $X\rightarrow i$, 174 occurrences, $6.4\%$). This simultaneously resolves \texttt{it}, \texttt{with}, \texttt{almost}, \texttt{of}, \texttt{mail} and \texttt{for} (Figure~\ref{fig:part10}).
+\begin{figure}[!htbp]
+\centering\includegraphics[width=\textwidth]{screenshots/part10.png}
+\caption{Substitution of $I\rightarrow r$, $S\rightarrow l$, $C\rightarrow f$ and $X\rightarrow i$}\label{fig:part10}
+\end{figure}
+\begin{lstlisting}
+it raG with almost DGAelieKaAle effiHieGHF. the AaJs of mail for OeliKerFthat morGiGJ to the
+emAassies iG KieGGa were AroDJht to the AlaHLHhamAer eaHh OaF at 7 a.m. there the letters were
+opeGeO AF meltiGJtheir seals with a HaGOle. the orOer of the letters iG aG eGKelope wasGoteO
+aGO the letters JiKeG to a sDAOireHtor. he reaO them aGO orOereOthe importaGt parts HopieO.
+\end{lstlisting}
+
+\subsection{Step 10: Substituting $H\rightarrow c$, $O\rightarrow d$, $G\rightarrow n$, $K\rightarrow v$ and $J\rightarrow g$}
+The sentence fragment \texttt{replaHeO iG their eGKelopes iGtheir oriJiGal orOer aGO the eGKelopes re-sealeO} directly determines five letters: $H\rightarrow c$ (83 occurrences, $3.0\%$), $O\rightarrow d$ (111 occurrences, $4.1\%$), $G\rightarrow n$ (176 occurrences, $6.5\%$), $K\rightarrow v$ (19 occurrences, $0.7\%$) and $J\rightarrow g$ (51 occurrences, $1.9\%$), yielding \texttt{replaced in their envelopes intheir original order and the envelopes re-sealed} (Figure~\ref{fig:part11}).
+\begin{figure}[!htbp]
+\centering\includegraphics[width=\textwidth]{screenshots/part11.png}
+\caption{Substitution of $H\rightarrow c$, $O\rightarrow d$, $G\rightarrow n$, $K\rightarrow v$ and $J\rightarrow g$}\label{fig:part11}
+\end{figure}
+\begin{lstlisting}
+it ran with almost DnAelievaAle efficiencF. the Aags of mail for deliverFthat morning to the
+emAassies in vienna were AroDght to the AlacLchamAer each daF at 7 a.m. there the letters were
+opened AF meltingtheir seals with a candle. the order of the letters in an envelope wasnoted
+and the letters given to a sDAdirector. he read them and orderedthe important parts copied.
+\end{lstlisting}
+
+\clearpage
+\subsection{Step 11: Substituting $D\rightarrow u$, $A\rightarrow b$, $F\rightarrow y$ and $L\rightarrow k$}
+From the nearly complete opening lines \texttt{it ran with almost DnAelievaAle efficiencF. the Aags of mail for deliverFthat morning to the emAassies in vienna were AroDght to the AlacLchamAer each daF at 7 a.m.}, the remaining four frequent unknowns are identified: $D\rightarrow u$ (64 occurrences, $2.3\%$), $A\rightarrow b$ (45 occurrences, $1.7\%$), $F\rightarrow y$ (42 occurrences, $1.5\%$) and $L\rightarrow k$ (21 occurrences, $0.8\%$) (Figure~\ref{fig:part12}).
+\begin{figure}[!htbp]
+\centering\includegraphics[width=\textwidth]{screenshots/part12.png}
+\caption{Substitution of $D\rightarrow u$, $A\rightarrow b$, $F\rightarrow y$ and $L\rightarrow k$}\label{fig:part12}
+\end{figure}
+\begin{lstlisting}
+it ran with almost unbelievable efficiency. the bags of mail for deliverythat morning to the
+embassies in vienna were brought to the blackchamber each day at 7 a.m. there the letters were
+opened by meltingtheir seals with a candle. the order of the letters in an envelope wasnoted
+and the letters given to a subdirector. he read them and orderedthe important parts copied.
+\end{lstlisting}
+
+\subsection{Step 12: Substituting $Y\rightarrow x$ and $E\rightarrow j$}
+Only two low-frequency symbols remain in the body of the passage:
+\begin{itemize}
+\item ciphertext \texttt{Y} (4 occurrences, $0.15\%$) appears in \texttt{for eYample}, \texttt{original waY}, \texttt{eYcerpted} and \texttt{eYistence}, establishing $Y\rightarrow x$;
+\item ciphertext \texttt{E} (3 occurrences, $0.11\%$) appears in \texttt{notEust me}, \texttt{subEected} and \texttt{enEoyed}, establishing $E\rightarrow j$;
+\end{itemize}
+Replacing $Y\rightarrow x$ and $E\rightarrow j$ completes the decryption of all 24 ciphertext symbols present in Variant 12.
 
 \chapter{Results}
-The successive substitutions recover a coherent passage about early Egyptian writing and cryptology. The following extracts make the accumulation of information visible before the complete key and plaintext are presented.
-\section{Progressive decryption}
-Each extract uses the same opening of the ciphertext. The case convention distinguishes unknown symbols from recovered letters. The excerpts are reconstructed from the cumulative substitutions above, with line wrapping adjusted for the report. Original missing spaces are retained.
-
-\subsection{After steps 1 and 2}
-\begin{lstlisting}
-NG T OTF GeTISF 4,000 FeTIP TJN, XG T tNRG HTSSeO ZeGet LQDCDANIOeIXGJ tQe tQXG
-IXAANG NC tQe GXSe, T ZTPteI PHIXAe PLetHQeO NDt tQeQXeINJSFUQP tQTt tNSO tQe PtNIF
-NC QXP SNIO'P SXCe— TGO XG PN ONXGJ QeNUeGeO tQe IeHNIOeO QXPtNIF NC HIFUtNSNJF. QXP
-RTP GNt T PFPteZ NC
-\end{lstlisting}
-
-\subsection{After step 3}
-\begin{lstlisting}
-NG T OTF GeTISF 4,000 FeTIP TJN, XG T tNRG HTSSeO ZeGet LhDCDANIOeIXGJ the thXG
-IXAANG NC the GXSe, T ZTPteI PHIXAe PLetHheO NDt thehXeINJSFUhP thTt tNSO the PtNIF
-NC hXP SNIO'P SXCe— TGO XG PN ONXGJ heNUeGeO the IeHNIOeO hXPtNIF NC HIFUtNSNJF. hXP
-RTP GNt T PFPteZ NC
-\end{lstlisting}
-
-\subsection{After step 4}
-\begin{lstlisting}
-NG a OaF GeaISF 4,000 FeaIP aJN, XG a tNRG HaSSeO ZeGet LhDCDANIOeIXGJ the thXG
-IXAANG NC the GXSe, a ZaPteI PHIXAe PLetHheO NDt thehXeINJSFUhP that tNSO the PtNIF
-NC hXP SNIO'P SXCe— aGO XG PN ONXGJ heNUeGeO the IeHNIOeO hXPtNIF NC HIFUtNSNJF. hXP
-RaP GNt a PFPteZ NC
-\end{lstlisting}
-
-\subsection{After steps 5 and 6}
-\begin{lstlisting}
-oG a OaF GeaISF 4,000 FeaIs aJo, XG a toRG HaSSeO ZeGet LhDCDAoIOeIXGJ the thXG
-IXAAoG oC the GXSe, a ZasteI sHIXAe sLetHheO oDt thehXeIoJSFUhs that toSO the stoIF
-oC hXs SoIO's SXCe— aGO XG so OoXGJ heoUeGeO the IeHoIOeO hXstoIF oC HIFUtoSoJF. hXs
-Ras Got a sFsteZ oC
-\end{lstlisting}
-
-\subsection{After steps 7 and 8}
-\begin{lstlisting}
-on a OaF nearSF 4,000 Fears aJo, in a toRn HaSSeO menet LhDCDAorOerinJ the thin
-riAAon oC the niSe, a master sHriAe sLetHheO oDt thehieroJSFUhs that toSO the storF
-oC his SorO's SiCe— anO in so OoinJ heoUeneO the reHorOeO historF oC HrFUtoSoJF. his
-Ras not a sFstem oC
-\end{lstlisting}
-
-\subsection{After steps 9 and 10}
-\begin{lstlisting}
-on a day nearly 4,000 years ago, in a toRn Halled menet LhDCDAordering the thin
-riAAon oC the nile, a master sHriAe sLetHhed oDt thehieroglyUhs that told the story
-oC his lord's liCe— and in so doing heoUened the reHorded history oC HryUtology. his
-Ras not a system oC
-\end{lstlisting}
-
-\subsection{After steps 11 and 12}
-\begin{lstlisting}
-on a day nearly 4,000 years ago, in a town called menet LhDfDAordering the thin
-riAAon of the nile, a master scriAe sLetched oDt thehieroglyUhs that told the story
-of his lord's life— and in so doing heoUened the recorded history of cryUtology. his
-was not a system of
-\end{lstlisting}
-
-\subsection{After steps 13--15}
-All letters in this opening extract are now resolved; the remaining four observed symbols occur elsewhere in the passage.
-\begin{lstlisting}
-on a day nearly 4,000 years ago, in a town called menet khufubordering the thin
-ribbon of the nile, a master scribe sketched out thehieroglyphs that told the story
-of his lord's life— and in so doing heopened the recorded history of cryptology. his
-was not a system of
-\end{lstlisting}
-
-\subsection{After steps 16--19}
-The opening is unchanged. The final deductions resolve the words \texttt{technique}, \texttt{even}, \texttt{text} and \texttt{just} elsewhere.
-\begin{lstlisting}
-on a day nearly 4,000 years ago, in a town called menet khufubordering the thin
-ribbon of the nile, a master scribe sketched out thehieroglyphs that told the story
-of his lord's life— and in so doing heopened the recorded history of cryptology. his
-was not a system of
-\end{lstlisting}
-
-\clearpage
 \section{Recovered substitution alphabet}
-Table~\ref{tab:key} gives the complete decryption alphabet. The 19 steps identify 25 observed pairs because several steps establish more than one letter.
-\begin{table}[htbp]
-\caption{Recovered ciphertext-to-plaintext substitution}\label{tab:key}
+Table~\ref{tab:key} summarizes the complete decryption key derived from the 12 analysis stages.
+\begin{table}[!htbp]
+\caption{Recovered ciphertext-to-plaintext substitution for Variant 12}\label{tab:key}
 \centering\small\setlength{\tabcolsep}{4pt}
 \begin{tabular}{l*{13}{c}}\hline
 Ciphertext & A&B&C&D&E&F&G&H&I&J&K&L&M\\
-Plaintext & b&q&f&u&j&y&n&c&r&g&v&k&z*\\\hline
+Plaintext  & b&q*&f&u&j&y&n&c&r&g&v&k&z*\\\hline
 Ciphertext & N&O&P&Q&R&S&T&U&V&W&X&Y&Z\\
-Plaintext & o&d&s&h&w&l&a&p&e&t&i&x&m\\\hline
+Plaintext  & o&d&s&h&w&l&a&p&e&t&i&x&m\\\hline
 \end{tabular}
-\par\smallskip\normalfont\small *M does not occur; $M\rightarrow z$ is inferred by elimination.
+\par\smallskip\normalfont\small *B and M do not occur in the ciphertext; $\{B,M\}\rightarrow\{q,z\}$ are inferred by elimination.
 \end{table}
-Every observed ciphertext letter has a distinct plaintext value. Under the full-alphabet permutation assumption, the sole unused plaintext letter z must correspond to the sole unused ciphertext letter M. No occurrence in the passage directly confirms this last pair.
 
-\section{Verification}
-The recovered key was applied to every letter of Variant 1, preserving nonletter characters. Applying the inverse key to the resulting literal plaintext reproduces the ciphertext after case normalization, including its punctuation, whitespace and line breaks. This confirms consistent application of the mapping. A round trip alone cannot establish the intended plaintext; grammatical English, repeated word patterns and the independent contextual deductions provide the additional evidence.
-
-The ciphertext contains 2,567 alphabetic characters. Its 26 symbol counts agree with the supplied frequency screenshot, including the zero count for M. The literal plaintext is preserved in Appendix~\ref{app:plain}; the ciphertext appears in Appendix~\ref{app:cipher}. Missing spaces such as \texttt{thehieroglyphs} are present in the source and do not represent a failed substitution.
+Every observed ciphertext symbol maps to a distinct plaintext letter. The only unused ciphertext letters are \texttt{B} and \texttt{M}, and the only unused plaintext letters are \texttt{q} and \texttt{z}.
 
 \section{Complete plaintext: reading version}
-The following passage is recovered from the supplied cryptogram \cite{handout,reference}. For readability, obvious word boundaries and capitalization are restored, and the stray bullet before ``proliferated'' is omitted. These editorial changes do not alter the sequence of letters. The historical claims belong to the decrypted passage.
-On a day nearly 4,000 years ago, in a town called Menet Khufu bordering the thin ribbon of the Nile, a master scribe sketched out the hieroglyphs that told the story of his lord’s life—and in so doing he opened the recorded history of cryptology. His was not a system of secret writing as the modern world knows it; he used no fully developed code of hieroglyphic symbol substitutions. His inscription, carved about 1900 B.C. into the living rock in the main chamber of the tomb of the nobleman Khnumhotep II, merely uses some unusual hieroglyphic symbols here and there in place of the more ordinary ones. Most occur in the last 20 columns of the inscription’s 222, in a section recording the monuments that Khnumhotep had erected in the service of the pharaoh Amenemhet II. 
+With standard capitalization and spacing restored at line-wrap boundaries, the decrypted Variant 12 passage reads as follows:
 
-The intention was not to make it hard to read the text. It was to impart a dignity and authority to it, perhaps in the same way that a government proclamation will spell out “In the year of Our Lord One thousand eight hundred and sixty three” instead of just writing “1863.” The anonymous scribe may also have been demonstrating his knowledge for posterity. Thus the inscription was not secret writing, but it incorporated one of the essential elements of cryptography: a deliberate transformation of the writing. It is the oldest text known to do so. 
+It ran with almost unbelievable efficiency. The bags of mail for delivery that morning to the embassies in Vienna were brought to the black chamber each day at 7 a.m. There the letters were opened by melting their seals with a candle. The order of the letters in an envelope was noted and the letters given to a subdirector. He read them and ordered the important parts copied. All the employees could write rapidly, and some knew shorthand. Long letters were dictated to save time, sometimes using four stenographers to a single letter. If a letter was in a language that he did not know, the subdirector gave it to a cabinet employee familiar with it. Two translators were always on hand. All European languages could be read, and when a new one was needed, an official learned it. Armenian, for example, took one cabinet polyglot only a few months to learn, and he was paid the usual 500 florins for his new knowledge. After copying, the letters were replaced in their envelopes in their original order and the envelopes re-sealed, using forged seals to impress the original wax. The letters were returned to the post office by 9:30 a.m.
 
-The transformations occur in funerary formulas, in a hymn to Thoth, in a chapter of the Book of the Dead, on the sarcophagus of the pharaoh Seti I, in royal titles displayed in Luxor, on the architrave of the Temple of Luxor, on stele, in laudatory biographic inscriptions. There is nothing meant to be concealed in all this; indeed, many of the statements are repeated in ordinary form right next to the altered ones. Why, then, the transformations? Sometimes for essentially the same reason as in Khnumhotep’s tomb: to impress the reader. Occasionally for a calligraphic or decorative effect; rarely, to indicate a contemporary pronunciation; perhaps even for a deliberate archaism as a reaction against foreign influence. 
+At 10 a.m., the mail that was passing through this crossroads of the continent arrived and was handled in the same way, though with less hurry because it was in transit. Usually it would be back in the post by 2 p.m., though sometimes it was kept as late as 7 p.m. At 11 a.m., interceptions made by the police for purposes of political surveillance arrived. And at 4 p.m., the couriers brought the letters that the embassies were sending out that day. These were back in the stream of communications by 6:30 p.m. Copied material was handed to the director of the cabinet, who excerpted information of special interest and routed it to the proper agencies, as police, army, or railway administration, and sent the mass of diplomatic material to the court. All told, the ten-man cabinet handled an average of between 80 and 100 letters a day.
 
-But many inscriptions are tinctured, for the first time, with the second essential for cryptology—secrecy. In a few cases, the secrecy was intended to increase the mystery and hence the arcane magical powers of certain religious texts. But the secrecy in many more cases resulted from the understandable desire of the Egyptians to have passersby read their epitaphs and so confer upon the departed the blessings written therein. 
+Astonishingly, their nimble fingers hardly ever stuffed letters into the wrong packet, despite the speed with which they worked. In one of the few recorded blunders, an intercepted letter to the Duke of Modena was erroneously re-sealed with the closely similar signet of Parma. When the duke noticed the substitution, he sent it to Parma with the wry note, ``Not just me---you too.'' Both states protested, but the Viennese greeted them with a blank stare, a shrug, and a bland profession of ignorance. Despite this, the existence of the black chamber was well known to the various delegates to the Austrian court, and was even tacitly acknowledged by the Austrians. When the British ambassador complained humorously that he was getting copies instead of his original correspondence, the chancellor replied coolly, ``How clumsy these people are!''
 
-In Egypt, with its concentration upon the afterlife, the number of these inscriptions soon proliferated to such an extent that the attention and the goodwill of visitors flagged. To revive their interest, the scribes deliberately made the inscriptions a bit obscure. They introduced the cryptographic signs to catch the reader’s eye, make him wonder, and tempt him into unriddling them—and so into reading the blessings. It was a sort of Madison Avenue technique in the Valley of the Kings. But the technique failed utterly. Instead of interesting the readers, it evidently destroyed even the slightest desire to read the epitaphs, for soon after the funerary cryptography was begun, it was abandoned.
+Enciphered correspondence was subjected to the usual cryptanalytic sweating process. The Viennese enjoyed remarkable success in this work. The French ambassador, who was apprised of its successes from papers sold him by a masked man on a bridge, remarked in astonishment that ``our ciphers of 1200 [groups] hold out only a little while against the ability of the Austrian decipherers.'' He added that though he suggested new ways of ciphering and continual changes of ciphers, ``I still find myself without secure means for the secrets I have to transmit to Constantinople, Stockholm, and St.\ Petersburg.''
 
 \utmconclusions
-The analysis recovers all 25 ciphertext symbols present in the message through 19 deduction steps. Frequencies suggest the initial e and t substitutions, but word patterns and grammatical context establish the remaining pairs. The unused $M\rightarrow z$ pair follows only from elimination under the permutation assumption.
+The Variant 12 cryptogram of $2{,}725$ letters is completely decrypted through 12 progressive deduction steps. Relative letter frequencies immediately identify the two most common letters ($V\rightarrow e$ at $13.94\%$ and $W\rightarrow t$ at $10.06\%$), which in turn expose high-frequency function words (\texttt{the}, \texttt{to}, \texttt{that}, \texttt{with}, \texttt{two}) and domain clues such as timestamps (\texttt{a.m.}, \texttt{p.m.}). Once the core vocabulary is established, longer phrases uniquely determine the remaining medium- and low-frequency letters.
 
-The exercise demonstrates why frequency ranking is a starting point rather than a complete solution. A readable short excerpt is also insufficient: symbols occurring only later must still be resolved. Checking the complete passage confirms that each recovered letter has one consistent interpretation.
+The result confirms that despite the $26!\approx4.03\times10^{26}$ nominal key space of a general monoalphabetic substitution cipher, preserving one-to-one letter correspondence leaves single-letter frequencies, digraphs, trigraphs and word patterns intact, making the cipher vulnerable to statistical and lexical cryptanalysis.
 
-The result connects directly with Laboratory Work No. 1. Enlarging the available alphabet permutations does not conceal repeated letters or the frequency distribution when substitution remains fixed throughout the message. The weakness exploited here is the preservation of language structure, even when exhaustive key search is impractical.
-
-\chapter*{Report materials}
-\addcontentsline{toc}{chapter}{Report materials}
-The materials are stored under \texttt{lab2}. They include the report source, four reused screenshots, ciphertext and literal plaintext. The laboratory repository is available at \url{\repositoryurl}.
+\begin{thebibliography}{9}
+\bibitem{repo} Gafenco Victor. \textit{Cryptography Laboratory Repository} [online]. GitHub, 2026 [accessed 10.11.2026]. Available: \url{\repositoryurl}
+\end{thebibliography}
 
 \appendix
 \chapter{Complete supplied ciphertext}\label{app:cipher}
-The Variant 1 text below preserves the letters, punctuation, missing spaces and line breaks extracted from the supplied handout \cite{handout}. Display lines may wrap to fit the page; case is ignored during analysis.
+The Variant 12 ciphertext below preserves the exact letters, punctuation, missing spaces and line breaks of the intercept.
 \lstinputlisting{materials/ciphertext.txt}
 \chapter{Literal decrypted text}\label{app:plain}
-The recovered key is applied to every alphabetic character, with plaintext written in lowercase. All nonletter characters and original word boundaries are retained. Unlike the reading version, joined words and the source bullet remain visible.
+The recovered substitution key is applied to every alphabetic character, with plaintext written in lowercase and all original word boundaries retained.
 \lstinputlisting{materials/plaintext.txt}
 \end{document}
